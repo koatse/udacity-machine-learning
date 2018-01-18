@@ -11975,7 +11975,7 @@ Run the agent.py file after setting the flags from projects/smartcab folder inst
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_no-learning&#39; log file from the initial simulation results</span>
@@ -13153,7 +13153,7 @@ mZmZ1YgTLDMzMzMzsxpxgmVmZmZmZlYjTrDMzMzMzMxq5P8AXtLmhK0hsH8AAAAASUVORK5CYII=
 <li>knowing <em>light</em> alone is not sufficient for safe driving. We also need to know in which directions traffic on our left/oncoming are going. In particular</li>
 <li>On green light<ul>
 <li>we can go forward and right regardless</li>
-<li>we can only go left if oncoming traffic is turning right.</li>
+<li>we can only go left if oncoming traffic is turning left.</li>
 </ul>
 </li>
 <li>On red light<ul>
@@ -13211,15 +13211,15 @@ mZmZ1YgTLDMzMzMzsxpxgmVmZmZmZlYjTrDMzMzMzMxq5P8AXtLmhK0hsH8AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># https://math.stackexchange.com/questions/983371/number-of-samples-with-replacement-to-reach-expected-coverage-of-population-unde</span>
-<span class="c1">#n=1174 samples would achieve E[#state_sampled/#state_space_size] &gt;= P</span>
+<span class="c1">#n=880 samples would achieve E[#state_sampled/#state_space_size] &gt;= P</span>
 <span class="c1">#where P=0.9999 and N=128</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="n">P</span> <span class="o">=</span> <span class="mf">0.9999</span>
-<span class="n">N</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">96</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">P</span><span class="p">)</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="mf">1.</span><span class="o">/</span><span class="n">N</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 </pre></div>
@@ -13238,7 +13238,7 @@ mZmZ1YgTLDMzMzMzsxpxgmVmZmZmZlYjTrDMzMzMzMxq5P8AXtLmhK0hsH8AAAAASUVORK5CYII=
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>1174.31237757
+<pre>879.579468519
 </pre>
 </div>
 </div>
@@ -13252,8 +13252,8 @@ mZmZ1YgTLDMzMzMzsxpxgmVmZmZmZlYjTrDMzMzMzMxq5P8AXtLmhK0hsH8AAAAASUVORK5CYII=
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
-<p>My feature set is <em>waypoint</em>, <em>light</em>, <em>left</em> and <em>oncoming</em>, which has 4 x 2 x 4 x 4 = 128 combination of states.</p>
-<p>From the calculation above, approximatley 1174 random samples would achieve 99.99% coverage. Given that each simulation trial would cover around 20 samples, approximately 60 trials (where epsilon = 1) should give almost complete coverage of the state space.</p>
+<p>My feature set is <em>waypoint</em>, <em>light</em>, <em>left</em> and <em>oncoming</em>, which has 3 x 2 x 4 x 4 = 96 combination of states.</p>
+<p>From the calculation above, approximatley 880 random samples would achieve 99.99% coverage. Given that each simulation trial would cover around 20 samples, approximately 60 trials (where epsilon = 1) should give almost complete coverage of the state space.</p>
 
 </div>
 </div>
@@ -16831,12 +16831,12 @@ ERHJyf8H1G6eiYcSawwAAAAASUVORK5CYII=
 </ul>
 </li>
 <li>if waypoint is left:<ul>
-<li>go left if oncoming traffic is None or turning right<ul>
+<li>go left if oncoming traffic is None or turning left<ul>
 <li>reason: safe to go left and this brings us closer to destination</li>
 </ul>
 </li>
-<li>otherwise go forward<ul>
-<li>reason: going left would cause accident, stopping would be traffic violation, going forward is closer to the waypoint than going right</li>
+<li>otherwise: wait for the traffic to clear and then turn left<ul>
+<li>reason: not waiting would cause accident</li>
 </ul>
 </li>
 </ul>
@@ -16874,11 +16874,6 @@ ERHJyf8H1G6eiYcSawwAAAAASUVORK5CYII=
 <li>the Q-optimal policy is go right since it has highest Q-value</li>
 </ul>
 </li>
-<li>waypoint=left, light=green, oncoming=forward, left=left<ul>
-<li>None: -4.45, forward: 0.49, right: 0.31, left: -19.68</li>
-<li>the Q-optimal policy is go forward since it has highest Q-value</li>
-</ul>
-</li>
 <li>waypoint=right, light=red, oncoming=forward, left=None<ul>
 <li>None: 0.41, forward: -9.59, right: 2.14, left: -17.35</li>
 <li>the Q-optimal policy is go right     </li>
@@ -16887,13 +16882,19 @@ ERHJyf8H1G6eiYcSawwAAAAASUVORK5CYII=
 </ul>
 </li>
 <li>Examples where Q-values give sub-optimal policy:<ul>
+<li>waypoint=left, light=green, oncoming=forward, left=left<ul>
+<li>None: -4.45, forward: 0.49, right: 0.31, left: -19.68</li>
+<li>the Q-optimal policy is go forward since it has highest Q-value</li>
+<li>the optimal policy should be wait till traffic is clear then turn left</li>
+</ul>
+</li>
 <li>waypoint=right, light=green, oncoming=left, left=right<ul>
 <li>None: -3.93, forward: 0.16, right: 0.00, left: 0.74</li>
 <li>the Q-optimal policy is go left</li>
 <li>The optimal policy should be go right instread</li>
-<li>The suboptimality is likely because during training the agent never had a chance to go right (recall we initilaize Q values to zero) and discover that it is better than the oother options. </li>
 </ul>
 </li>
+<li>Suboptimality is likely because during training the agent never had a chance to go right (recall we initilaize Q values to zero) and discover that it is better than the oother options. </li>
 </ul>
 </li>
 </ul>

@@ -109,13 +109,9 @@ class LearningAgent(Agent):
         # Calculate the maximum Q-value of all actions for a given state
         self.createQ(state)
         Qactions = self.Q[state]
-        
         #should randomly break the tie !!
         valuemax = max(list(Qactions.values()))
-        opt_actions = [action for action, value in Qactions.items() if value==valuemax]
-        opt_action = random.choice(opt_actions)
-
-        return opt_action, valuemax 
+        return valuemax 
 
 
     def createQ(self, state):
@@ -154,8 +150,9 @@ class LearningAgent(Agent):
             if np.random.random() < self.epsilon:
                 action = random.choice(self.valid_actions)
             else:
-                opt_action, opt_Q = self.get_maxQ(state)
-                action = opt_action
+                opt_Q = self.get_maxQ(state)
+                opt_actions = [action for action, value in self.Q[state].items() if value==opt_Q]
+                opt_action = random.choice(opt_actions)
         # When not learning, choose a random action
         # When learning, choose a random action with 'epsilon' probability
         # Otherwise, choose an action with the highest Q-value for the current state
